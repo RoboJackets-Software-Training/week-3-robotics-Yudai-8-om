@@ -103,13 +103,34 @@ public:
         while (!queue.empty())
         {
             // IMPLEMENT CODE HERE!
-
+            std::vector<Node *> currPath = queue.front();
+            queue.pop();
+            Node* currNode = currPath[currPath.size()-1];
             // Dequeued front path from queue (get and delete from queue)
             // Get path's last node (current node)
 
+            if (currNode == exitNode_){
+            	if (verbose){
+            		for (Node *n : currPath)
+            			grid_[n->r][n->c] = "+";
+            		displayGrid();
+            		usleep(TIME_DELAY);
+
+            }
+            	return currPath;
+            }
             // Leave if current node is exit node
             // DEBUGGING: Iterate though nodes in solution path and set path grid cells (grid_) to "+" and print grid (displayGrid)
 
+            for (Node *neighbor : currNode->neighbors){
+            	if (visited.find(neighbor) == visited.end()){
+            		grid_[neighbor->r][neighbor->c] = "*";
+            		visited.insert(neighbor);
+            		std::vector<Node *> newPath(currPath);
+            		newPath.push_back(neighbor);
+            		queue.push(newPath);
+            	}
+            }
             // Get all adjacent nodes of the current node (use currNode->neighbors)
             // If an adjacent has not been visited (not in visited set),
             // mark it as visited and enqueue its path (copy current path. add the adjacent node, add to queue)
@@ -140,14 +161,36 @@ public:
         {
             // IMPLEMENT CODE HERE!
 
+            std::vector<Node *> currPath = stack.top();
+            stack.pop();
+            Node* currNode = currPath[currPath.size()-1];
+            visited.insert(currNode);
+            grid_[currNode->r][currNode->c] = "*";
             // Dequeued front path from stack (get and delete from stack)
             // Get path's last node (current node)
             // Mark current node as visited
             // DEBUGGING: Set visited cell in grid to "*" so they are different color when displaying
+            if (currNode == exitNode_){
+            	if (verbose){
+            		for (Node *n : currPath)
+            			grid_[n->r][n->c] = "+";
+            		displayGrid();
+            		usleep(TIME_DELAY);
+
+            }
+            	return currPath;
+            }
 
             // Leave if current node is exit node
             // DEBUGGING: Iterate though nodes in solution path and set path grid cells (grid_) to "+" and print grid (displayGrid)
 
+            for (Node *neighbor : currNode->neighbors){
+            	if (visited.find(neighbor) == visited.end()){
+            		std::vector<Node *> newPath(currPath);
+            		newPath.push_back(neighbor);
+            		stack.push(newPath);
+            	}
+            }
             // Get all adjacent nodes of the current node (use currNode->neighbors)
             // If an adjacent has not been visited (not in visited set),
             // enqueue its path (copy current path. add the adjacent node, add to stack)
